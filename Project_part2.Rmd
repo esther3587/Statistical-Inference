@@ -1,0 +1,47 @@
+---
+title: "Statistical Inference Course Project Part 1"
+author: "Shun-Wen Chang"
+date: "October 24, 2015"
+output: pdf_document
+---
+
+##Overview:##
+This project investigates the exponential distribution in R and compare it with the Central Limit Theorem.
+
+##Simulations:##
+The exponential distribution can be simulated in R with rexp(n, lambda) where lambda is the rate parameter. The mean of exponential distribution is 1/lambda and the standard deviation is also 1/lambda. Set lambda = 0.2 and number to average is 40. I do a thousand simulations.
+
+```{r,echo=TRUE}
+lambda = 0.2
+n = 40
+nSim = 1:1000
+set.seed(200)
+Means <- data.frame(x = sapply(nSim, function(x) {
+    mean(rexp(n, lambda))
+}))
+```
+##Sample Mean versus Theoretical Mean:##
+```{r,echo=TRUE}
+s_mean<-mean(Means$x)
+s_mean
+t_mean<-(1/lambda)
+t_mean
+```
+The sample mean is almost the same as the theoretical mean with 0.016 difference.
+
+##Sample Variance versus Theoretical Variance:##
+```{r,echo=TRUE}
+s_var<-var(Means$x)
+s_var
+t_var<-((1/lambda)/sqrt(n))^2
+t_var
+```
+The sample variance is almost the same as the theoretical variance with 0.033 difference.
+
+##Distribution:##
+```{r,echo=TRUE}
+library(ggplot2)
+ggplot(data=Means,aes(x=x))+geom_histogram(aes(y=..density..),fill="green",binwidth=0.1,color="grey")+stat_function(fun=dnorm,args=list(mean=5,sd=sd(Means$x)))
+```
+
+Yes the distribution is approximately normal.
