@@ -1,0 +1,66 @@
+---
+title: "Statistical Inference Course Project Part 2"
+author: "Shun-Wen Chang"
+date: "October 24, 2015"
+output: pdf_document
+---
+
+##Overview:##
+This project analyzes the ToothGrowth data in the R datasets package and uses confidence intervals and hypothesis tests to compare tooth growth by supp and dose. The response is the length of odontoblasts (teeth) in each of 10 guinea pigs at each of three dose levels of Vitamin C (0.5, 1, and 2 mg) with each of two delivery methods (orange juice or ascorbic acid).
+
+##Load Data:##
+Load data and necessary packages.
+
+```{r,echo=TRUE}
+library(ggplot2)
+data(ToothGrowth)
+str(ToothGrowth)
+head(ToothGrowth)
+```
+##Summary of the Data:##
+```{r,echo=TRUE}
+summary(ToothGrowth)
+```
+##Exploratory Analysis:##
+Divide the tooth length data by delivering method and create box plot for viewing.
+```{r,echo=TRUE}
+Toothlength_deliver <- split(ToothGrowth$len,ToothGrowth$supp)
+sapply(Toothlength_deliver,mean)
+ggplot(aes(x=supp,y=len),data=ToothGrowth) + geom_boxplot(aes(fill=supp))+ xlab("Supplement type")+ylab("Tooth length")
+```
+
+It may seem like with method OJ the tooth length is on averagy longer. However, we need to do further check...
+
+Now we check the tooth length with different dose:
+```{r,echo=TRUE}
+ToothGrowth$dose<-as.factor(ToothGrowth$dose)
+Toothlength_dose <- split(ToothGrowth$len,ToothGrowth$dose)
+sapply(Toothlength_dose,mean)
+ggplot(aes(x=supp,y=len),data=ToothGrowth) + geom_boxplot(aes(fill=dose))+ xlab("Dosage")+ylab("Tooth length")
+```
+
+It may seem like with higher dose the tooth length is on averagy longer. However, we need to do further check...
+
+##Use Hypothesis Test to Compare data:##
+
+**Assumption: significance level is 5%**
+
+Test if the tooth growth length depends on the vitamin delivery methods.
+```{r,echo=TRUE}
+len<-ToothGrowth$len
+supp<-ToothGrowth$supp
+dose<-ToothGrowth$dose
+t.test(len[supp=="OJ"], len[supp=="VC"], paired = FALSE, var.equal = FALSE)
+```
+
+p-value = 0.06063 is over significance level 5%. We cannot reject null hypothesis. Therefore we conclude that the delivery methods has no effect on the tooth growth.
+
+Test if the tooth growth length depends on the vitamin dosage.
+```{r,echo=TRUE}
+t.test(len[dose==2], len[dose==1], paired = FALSE, var.equal = TRUE)
+```
+
+p-value is almost zero, less than 5%. We can therefore reject null hypothesis. We then conclude that the dosage cause positive effect on the tooth growth, which means that higher dosage will lead to longer tooth.
+
+
+**My conlusion is that vitamin delivery methods doesn't affect the tooth growth, while higher dosage leads to longer tooth growth.**
